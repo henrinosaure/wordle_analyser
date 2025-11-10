@@ -37,18 +37,34 @@ def find_possible_word(attempt, colors, word):
     greens=find_green(colors)
     yellows=find_yellow(colors)
     blacks=find_black(colors)
+    #test green logic
     for i in range(5):
         if (greens[i] and attempt[i]!=word[i]):
                 return False
         if (not greens[i] and attempt[i]==word[i]):
             return False
 
+    #test yellow logic
     for i in range(5):
         if yellows[i]:
             letter=attempt[i]
             if letter not in word:
                 return False
             if letter == word[i]:
+                return False
+    # Test black logic
+    for i in range(5):
+        if blacks[i]:
+            letter = attempt[i]
+            # Count how many times this letter appears with green/yellow
+            green_yellow_count = sum(1 for j in range(5)
+                                     if attempt[j] == letter and (greens[j] or yellows[j]))
+            # Count how many times this letter appears in the candidate word
+            word_count = word.count(letter)
+
+            # If black, the word should have exactly as many of this letter
+            # as we've seen in green/yellow positions (no more)
+            if word_count != green_yellow_count:
                 return False
     return True
 
@@ -59,9 +75,7 @@ def find_possible_words(attempt, colors, bank):
     """
     possible_words=[]
     for word in bank:
-        if find_possible_word(attempt, colors, word):
-            possible_words.append(word)
+        if find_possible_word(attempt.upper(), colors, word.upper()):
+            possible_words.append(word.upper())
     return possible_words
-
-
 
