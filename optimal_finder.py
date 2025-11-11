@@ -1,7 +1,6 @@
 from wordslist import full_words_list, filtered_list
 from wordle_functions import find_possible_words
 from math import log2
-top_10={}
 
 color_permutations = ['ggggg', 'ggggb', 'ggggy', 'gggbg', 'gggbb', 'gggby', 'gggyg', 'gggyb', 'gggyy', 'ggbgg', 'ggbgb', 'ggbgy', 'ggbbg', 'ggbbb', 'ggbby', 'ggbyg', 'ggbyb', 'ggbyy', 'ggygg', 'ggygb', 'ggygy', 'ggybg', 'ggybb', 'ggyby', 'ggyyg', 'ggyyb', 'ggyyy', 'gbggg', 'gbggb', 'gbggy', 'gbgbg', 'gbgbb', 'gbgby', 'gbgyg', 'gbgyb', 'gbgyy', 'gbbgg', 'gbbgb', 'gbbgy', 'gbbbg', 'gbbbb', 'gbbby', 'gbbyg', 'gbbyb', 'gbbyy', 'gbygg', 'gbygb', 'gbygy', 'gbybg', 'gbybb', 'gbyby', 'gbyyg', 'gbyyb', 'gbyyy', 'gyggg', 'gyggb', 'gyggy', 'gygbg', 'gygbb', 'gygby', 'gygyg', 'gygyb', 'gygyy', 'gybgg', 'gybgb', 'gybgy', 'gybbg', 'gybbb', 'gybby', 'gybyg', 'gybyb', 'gybyy', 'gyygg', 'gyygb', 'gyygy', 'gyybg', 'gyybb', 'gyyby', 'gyyyg', 'gyyyb', 'gyyyy', 'bgggg', 'bgggb', 'bgggy', 'bggbg', 'bggbb', 'bggby', 'bggyg', 'bggyb', 'bggyy', 'bgbgg', 'bgbgb', 'bgbgy', 'bgbbg', 'bgbbb', 'bgbby', 'bgbyg', 'bgbyb', 'bgbyy', 'bgygg', 'bgygb', 'bgygy', 'bgybg', 'bgybb', 'bgyby', 'bgyyg', 'bgyyb', 'bgyyy', 'bbggg', 'bbggb', 'bbggy', 'bbgbg', 'bbgbb', 'bbgby', 'bbgyg', 'bbgyb', 'bbgyy', 'bbbgg', 'bbbgb', 'bbbgy', 'bbbbg', 'bbbbb', 'bbbby', 'bbbyg', 'bbbyb', 'bbbyy', 'bbygg', 'bbygb', 'bbygy', 'bbybg', 'bbybb', 'bbyby', 'bbyyg', 'bbyyb', 'bbyyy', 'byggg', 'byggb', 'byggy', 'bygbg', 'bygbb', 'bygby', 'bygyg', 'bygyb', 'bygyy', 'bybgg', 'bybgb', 'bybgy', 'bybbg', 'bybbb', 'bybby', 'bybyg', 'bybyb', 'bybyy', 'byygg', 'byygb', 'byygy', 'byybg', 'byybb', 'byyby', 'byyyg', 'byyyb', 'byyyy', 'ygggg', 'ygggb', 'ygggy', 'yggbg', 'yggbb', 'yggby', 'yggyg', 'yggyb', 'yggyy', 'ygbgg', 'ygbgb', 'ygbgy', 'ygbbg', 'ygbbb', 'ygbby', 'ygbyg', 'ygbyb', 'ygbyy', 'ygygg', 'ygygb', 'ygygy', 'ygybg', 'ygybb', 'ygyby', 'ygyyg', 'ygyyb', 'ygyyy', 'ybggg', 'ybggb', 'ybggy', 'ybgbg', 'ybgbb', 'ybgby', 'ybgyg', 'ybgyb', 'ybgyy', 'ybbgg', 'ybbgb', 'ybbgy', 'ybbbg', 'ybbbb', 'ybbby', 'ybbyg', 'ybbyb', 'ybbyy', 'ybygg', 'ybygb', 'ybygy', 'ybybg', 'ybybb', 'ybyby', 'ybyyg', 'ybyyb', 'ybyyy', 'yyggg', 'yyggb', 'yyggy', 'yygbg', 'yygbb', 'yygby', 'yygyg', 'yygyb', 'yygyy', 'yybgg', 'yybgb', 'yybgy', 'yybbg', 'yybbb', 'yybby', 'yybyg', 'yybyb', 'yybyy', 'yyygg', 'yyygb', 'yyygy', 'yyybg', 'yyybb', 'yyyby', 'yyyyg', 'yyyyb', 'yyyyy']
 
@@ -71,6 +70,36 @@ def possible_colors(attempt,bank):
             poss_colors.append(color)
     return poss_colors
 
-def something():
-    for word in full_words_list:
+
+def average_bits(attempt,bank):
+    """From a bank of possible words and an attempt, uses a new list of possible colors the attempt can take, and creates
+    a parallel list of the probability of the color multiplied by the amount of bits it provides. The list is then added
+    together"""
+    colors = possible_colors(attempt, bank)
+    parallel_list=[]
+    for color in colors:
+        parallel_list.append(color_probability(attempt, color, bank)*bits(attempt,color, bank))
+    avg_bits=0
+    for unit in parallel_list:
+        avg_bits+=unit
+    return avg_bits
+
+
+"""TO CHANGE: I REMOVED FULL_WORDS_LIST AND CHANGED IT FOR FILTERED LIST FOR A FASTER EXPERIENCE"""
+
+
+def best_word_finder(bank):
+    best_word=""
+    best_word_bits=0
+    for attempt in full_words_list:
+        if best_word=="":
+            best_word=attempt
+            best_word_bits=average_bits(attempt, bank)
+        elif best_word_bits<average_bits(attempt, bank):
+            best_word = attempt
+            best_word_bits = average_bits(attempt, bank)
+    return {best_word:best_word_bits}
+
+
+
 
