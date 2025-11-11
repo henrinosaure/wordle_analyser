@@ -6,6 +6,9 @@ from wordslist import filtered_list
 for i in range(6):
     attempt1 = input(f"Attempt#{i+1}: ").upper()
     colors1= input("What are the colors for the attempt (example: gybbb) : ")
+    if colors1=="ggggg":
+        print("Congrats on your win choomba")
+        break
     if i ==0:
         remaining_words = find_possible_words(attempt1,colors1,filtered_list)
     else:

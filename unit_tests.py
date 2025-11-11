@@ -1,4 +1,6 @@
 from wordle_functions import find_possible_word, find_possible_words
+from optimal_finder import color_finder
+
 def test_find_possible_word():
     print("Testing find_possible_word...")
 
@@ -50,13 +52,19 @@ def test_find_possible_words():
 def test_black():
     print("Test 1: Single black letter - should not appear anywhere in word")
     assert find_possible_word("salet", "bgggg", "palet") == True  # 's' black, not in word
+    print("Test 1.1 complete")
     assert find_possible_word("salet", "bgggg", "salet") == False  # 's' black, but in word
+    print("Test 1.2 complete")
     assert find_possible_word("salet", "bgggg", "tales") == False  # 's' black, but in word
+    print("Test 1.3 complete")
 
     print("Test 2: Multiple black letters - none should appear")
     assert find_possible_word("salet", "bbggg", "mplet") == True  # 's','a' black, not in word
+    print("Test 2.1 complete")
     assert find_possible_word("salet", "bbggg", "males") == False  # 'a' black, but in word
+    print("Test 2.2 complete")
     assert find_possible_word("salet", "bbggg", "splet") == False  # 's' black, but in word
+    print("Test 2.3 complete")
 
     print("Test 3: All black letters")
     assert find_possible_word("salet", "bbbbb", "truck") == True  # none of s,a,l,e,t in word
@@ -100,4 +108,98 @@ def test_black():
 
     print("All black logic tests passed!")
 
-test_find_possible_word()
+
+def test_color_finder():
+    """Comprehensive tests for the color_finder function."""
+
+
+    print("Test 1: All letters correct")
+    assert color_finder("crate", "crate") == "ggggg"
+    print("Test 1.1 complete")
+    assert color_finder("hello", "hello") == "ggggg"
+    print("Test 1.2 complete")
+    assert color_finder("WORLD", "world") == "ggggg"  # Case insensitive
+    print("Test 1.3 complete")
+
+    print("\nTest 2: No matching letters")
+    assert color_finder("abcde", "fghij") == "bbbbb"
+    print("Test 2.1 complete")
+    assert color_finder("think", "jumpy") == "bbbbb"
+    print("Test 2.2 complete")
+    assert color_finder("crane", "thumb") == "bbbbb"
+    print("Test 2.3 complete")
+
+    print("\nTest 3: All letters present but wrong positions")
+    assert color_finder("abcde", "edbca") == "yyyyy"
+    print("Test 3.1 complete")
+    assert color_finder("steam", "mates") == "yyyyy"
+    print("Test 3.2 complete")
+
+    print("\nTest 4: Mixed green, yellow, black")
+    assert color_finder("crane", "crate") == "gggbg"
+    print("Test 4.1 complete")
+    assert color_finder("steal", "stale") == "ggyyy"
+    print("Test 4.2 complete")
+    assert color_finder("arise", "raise") == "yyggg"
+    print("Test 4.3 complete")
+    assert color_finder("crime", "prime") == "bgggg"
+    print("Test 4.4 complete")
+
+    print("\nTest 5: Duplicate letters in attempt")
+    print("Test 5.1: Two e's in answer, two in attempt at correct positions")
+    assert color_finder("speed", "abide") == "bbyby"
+    print("Test 5.1 complete")
+
+    print("Test 5.2: Two e's in answer, two in attempt at wrong positions")
+    assert color_finder("erase", "speed") == "ybbyy"
+    print("Test 5.2 complete")
+
+    print("Test 5.3: Two m's in answer, three m's in attempt")
+    assert color_finder("mamma", "maxim") == "ggybb"  # 1st m green, 2nd m yellow, 3rd m black
+    print("Test 5.3 complete")
+
+    print("Test 5.4: One a in answer, three a's in attempt (a at position 0)")
+    assert color_finder("aaaaa", "abcde") == "gbbbb"
+    print("Test 5.4 complete")
+
+    print("Test 5.5: One a in answer, three a's in attempt (a at position 3)")
+    assert color_finder("aapap", "bcade") == "ybbbb"
+    print("Test 5.5 complete")
+
+    print("\nTest 6: Duplicate letters in answer")
+    print("Test 6.1: Two e's in answer, one e in attempt (correct position)")
+    assert color_finder("crane", "geese") == "bbbbg"
+    print("Test 6.1 complete")
+
+    print("Test 6.2: Two o's in answer, two o's in attempt (different positions)")
+    assert color_finder("robot", "floor") == "yybgb"
+    print("Test 6.2 complete")
+
+    print("Test 6.3: Three e's in answer, one e in attempt")
+    assert color_finder("crane", "eeeee") == "bbbbg"
+    print("Test 6.3 complete")
+
+    print("\nTest 7: Case insensitivity")
+    assert color_finder("CRANE", "crate") == "gggbg"
+    print("Test 7.1 complete")
+    assert color_finder("Crane", "CRATE") == "gggbg"
+    print("Test 7.2 complete")
+    assert color_finder("CrAnE", "CrAtE") == "gggbg"
+    print("Test 7.3 complete")
+
+
+    print("\nTest 9: Edge cases")
+    print("Test 9.1: Letter appears once in answer, twice in attempt (one correct position)")
+    assert color_finder("poppy", "promo") == "gybbb"  # p green at 0, second p black, third p yellow
+    print("Test 9.1 complete")
+
+    print("Test 9.2: Letter appears twice in answer, once in attempt (wrong position)")
+    assert color_finder("great", "eerie") == "byybb"
+    print("Test 9.2 complete")
+
+    print("Test 9.3: All same letter in attempt, one match in answer")
+    assert color_finder("lllll", "hello") == "bbggb"
+    print("Test 9.3 complete")
+
+    print("All tests complete")
+
