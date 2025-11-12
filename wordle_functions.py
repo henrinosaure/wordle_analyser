@@ -3,7 +3,7 @@ def find_green(colors):
     output : list of positions that are green as bool"""
     greens =[]
     for i in range(5):
-        if colors[i] == "g":
+        if colors[i] == "G":
             greens.append(True)
         else:
             greens.append(False)
@@ -14,7 +14,7 @@ def find_yellow(colors):
     output : list of positions that are yellow as bool"""
     yellows =[]
     for i in range(5):
-        if colors[i] == "y":
+        if colors[i] == "Y":
             yellows.append(True)
         else:
             yellows.append(False)
@@ -25,7 +25,7 @@ def find_black(colors):
     output : list of positions that are black as bool"""
     blacks =[]
     for i in range(5):
-        if colors[i] == "b":
+        if colors[i] == "B":
             blacks.append(True)
         else:
             blacks.append(False)
@@ -75,7 +75,7 @@ def find_possible_words(attempt, colors, bank):
     """
     possible_words=[]
     for word in bank:
-        if find_possible_word(attempt.upper(), colors, word.upper()):
-            possible_words.append(word.upper())
+        if find_possible_word(attempt, colors, word):
+            possible_words.append(word)
     return possible_words
 

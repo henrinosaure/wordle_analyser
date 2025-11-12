@@ -2,8 +2,9 @@ from wordslist import full_words_list, filtered_list
 from wordle_functions import find_possible_words
 from math import log2
 
-color_permutations = ['ggggg', 'ggggb', 'ggggy', 'gggbg', 'gggbb', 'gggby', 'gggyg', 'gggyb', 'gggyy', 'ggbgg', 'ggbgb', 'ggbgy', 'ggbbg', 'ggbbb', 'ggbby', 'ggbyg', 'ggbyb', 'ggbyy', 'ggygg', 'ggygb', 'ggygy', 'ggybg', 'ggybb', 'ggyby', 'ggyyg', 'ggyyb', 'ggyyy', 'gbggg', 'gbggb', 'gbggy', 'gbgbg', 'gbgbb', 'gbgby', 'gbgyg', 'gbgyb', 'gbgyy', 'gbbgg', 'gbbgb', 'gbbgy', 'gbbbg', 'gbbbb', 'gbbby', 'gbbyg', 'gbbyb', 'gbbyy', 'gbygg', 'gbygb', 'gbygy', 'gbybg', 'gbybb', 'gbyby', 'gbyyg', 'gbyyb', 'gbyyy', 'gyggg', 'gyggb', 'gyggy', 'gygbg', 'gygbb', 'gygby', 'gygyg', 'gygyb', 'gygyy', 'gybgg', 'gybgb', 'gybgy', 'gybbg', 'gybbb', 'gybby', 'gybyg', 'gybyb', 'gybyy', 'gyygg', 'gyygb', 'gyygy', 'gyybg', 'gyybb', 'gyyby', 'gyyyg', 'gyyyb', 'gyyyy', 'bgggg', 'bgggb', 'bgggy', 'bggbg', 'bggbb', 'bggby', 'bggyg', 'bggyb', 'bggyy', 'bgbgg', 'bgbgb', 'bgbgy', 'bgbbg', 'bgbbb', 'bgbby', 'bgbyg', 'bgbyb', 'bgbyy', 'bgygg', 'bgygb', 'bgygy', 'bgybg', 'bgybb', 'bgyby', 'bgyyg', 'bgyyb', 'bgyyy', 'bbggg', 'bbggb', 'bbggy', 'bbgbg', 'bbgbb', 'bbgby', 'bbgyg', 'bbgyb', 'bbgyy', 'bbbgg', 'bbbgb', 'bbbgy', 'bbbbg', 'bbbbb', 'bbbby', 'bbbyg', 'bbbyb', 'bbbyy', 'bbygg', 'bbygb', 'bbygy', 'bbybg', 'bbybb', 'bbyby', 'bbyyg', 'bbyyb', 'bbyyy', 'byggg', 'byggb', 'byggy', 'bygbg', 'bygbb', 'bygby', 'bygyg', 'bygyb', 'bygyy', 'bybgg', 'bybgb', 'bybgy', 'bybbg', 'bybbb', 'bybby', 'bybyg', 'bybyb', 'bybyy', 'byygg', 'byygb', 'byygy', 'byybg', 'byybb', 'byyby', 'byyyg', 'byyyb', 'byyyy', 'ygggg', 'ygggb', 'ygggy', 'yggbg', 'yggbb', 'yggby', 'yggyg', 'yggyb', 'yggyy', 'ygbgg', 'ygbgb', 'ygbgy', 'ygbbg', 'ygbbb', 'ygbby', 'ygbyg', 'ygbyb', 'ygbyy', 'ygygg', 'ygygb', 'ygygy', 'ygybg', 'ygybb', 'ygyby', 'ygyyg', 'ygyyb', 'ygyyy', 'ybggg', 'ybggb', 'ybggy', 'ybgbg', 'ybgbb', 'ybgby', 'ybgyg', 'ybgyb', 'ybgyy', 'ybbgg', 'ybbgb', 'ybbgy', 'ybbbg', 'ybbbb', 'ybbby', 'ybbyg', 'ybbyb', 'ybbyy', 'ybygg', 'ybygb', 'ybygy', 'ybybg', 'ybybb', 'ybyby', 'ybyyg', 'ybyyb', 'ybyyy', 'yyggg', 'yyggb', 'yyggy', 'yygbg', 'yygbb', 'yygby', 'yygyg', 'yygyb', 'yygyy', 'yybgg', 'yybgb', 'yybgy', 'yybbg', 'yybbb', 'yybby', 'yybyg', 'yybyb', 'yybyy', 'yyygg', 'yyygb', 'yyygy', 'yyybg', 'yyybb', 'yyyby', 'yyyyg', 'yyyyb', 'yyyyy']
+from functools import lru_cache
 
+@lru_cache(maxsize=None)
 def color_finder(attempt, answer):
     """
     Check a Wordle attempt against the answer and return color pattern.
@@ -19,8 +20,6 @@ def color_finder(attempt, answer):
         - 'b' = black/gray (letter not in word)
 
     """
-    attempt = attempt.lower()
-    answer = answer.lower()
 
     result = ['b'] * len(attempt)
 
@@ -32,14 +31,14 @@ def color_finder(attempt, answer):
     # First pass: mark greens and decrease available counts
     for i in range(len(attempt)):
         if attempt[i] == answer[i]:
-            result[i] = 'g'
+            result[i] = 'G'
             answer_counts[attempt[i]] -= 1
 
     # Second pass: mark yellows from remaining available letters
     for i in range(len(attempt)):
-        if result[i] == 'b':  # Only check non-green positions
+        if result[i] == 'B':  # Only check non-green positions
             if attempt[i] in answer_counts and answer_counts[attempt[i]] > 0:
-                result[i] = 'y'
+                result[i] = 'Y'
                 answer_counts[attempt[i]] -= 1
 
     return ''.join(result)
@@ -85,21 +84,36 @@ def average_bits(attempt,bank):
     return avg_bits
 
 
-"""TO CHANGE: I REMOVED FULL_WORDS_LIST AND CHANGED IT FOR FILTERED LIST FOR A FASTER EXPERIENCE"""
+def best_word_finder(bank, loading=False, update_interval=250):
+    best_word = ""
+    best_word_bits = 0
+    total_words = len(full_words_list)
 
+    for index, attempt in enumerate(full_words_list):
+        # Display loading progress at custom intervals if enabled
+        if loading and (index + 1) % update_interval == 0:
+            progress = (index + 1) / total_words * 100
+            print(f"\rProgress: {progress:.1f}% ({index + 1}/{total_words})", end='', flush=True)
 
-def best_word_finder(bank):
-    best_word=""
-    best_word_bits=0
-    for attempt in full_words_list:
-        if best_word=="":
-            best_word=attempt
-            best_word_bits=average_bits(attempt, bank)
-        elif best_word_bits<average_bits(attempt, bank):
+        if best_word == "":
             best_word = attempt
             best_word_bits = average_bits(attempt, bank)
-    return {best_word:best_word_bits}
+        elif best_word_bits < average_bits(attempt, bank):
+            best_word = attempt
+            best_word_bits = average_bits(attempt, bank)
+
+    # Print final progress and newline
+    if loading:
+        print(f"\rProgress: 100.0% ({total_words}/{total_words})")
+
+    return {best_word: best_word_bits}
 
 
-
-
+def determine_strategy(bank):
+    if len(bank)>25:
+        return ["eliminate"]
+    for word in bank:
+        if len(find_possible_words(word))<2:
+            return ["attempt",word]
+    else:
+        return ["eliminate"]
